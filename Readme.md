@@ -1,14 +1,12 @@
 # Extensions for react-testing-library
 
-Useful extensions to react-testing-library for easier testing.
+Useful extensions to react-testing-library for easier testing. Includes specific API methods for form/field input testing
 
-Includes specific API methods for form/field input testing
+A core philosophy of this extension library is to better allow accessing elements by `id` or `name` as they are way less volatile reference markers.
 
-A core philosophy of this project is to better allow accessing elements by `id` or `name` as they are less volatile.
+Personally I like to use generators to generate most of my application artifacts from various schemas. Hence I don't know or care what labels will go in. This means that the core philosophy of "testing by usage" doesn't really suit my application development style as I don't care about what the user sees at the end... until the end!
 
-Personally I like to use generators to generate most of my application artifacts from schemas, without knowing what labels would go in, so the core philosophy of "testing by usage" doesn't really suit my application development style.
-
-I tend to focus first on infrastructure and leave the UI concerns including labels/text to the final stage. Hence methods such as `getByText` or `getByLabel` is pretty useless to me except perhaps for E2E testing at the end.
+I tend to focus first on infrastructure and leave the UI concerns including labels/text to the final stage of development (ie. "skinning"). Hence methods such as `getByText` or `getByLabel` are pretty useless to me, except perhaps for E2E testing at the end.
 
 I like to inject texts, labels, UI framework, theming etc. much later in the dev process and maintain flexibility with regards to _i18n_ etc.
 
