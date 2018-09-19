@@ -1,13 +1,21 @@
-export const change = (field, {name, value}) => {
-  fireEvent.change(field, {
-    target: {
-      name,
-      value
-    }
-  })
+export const eventsApi = ({fireEvent}) {
+  fireEvent: (name, ...args) => {
+    fireEvent[name](...args)
+  }
 }
 
-export const apiFor = (container) => {
+export const apiFor = (container, config) => {
+  const {fireEvent} = config
+
+  const change = (field, {name, value}) => {
+    fireEvent('change', field, {
+      target: {
+        name,
+        value
+      }
+    })
+  }
+
   const elementBy = ({
     parent,
     tag,
@@ -89,13 +97,13 @@ export const apiFor = (container) => {
       tag: 'button',
       type: 'submit'
     })
-    fireEvent.click(submitButton)
+    fireEvent('click', submitButton)
   }
   api.changeValue = (opts) => {
     const field = api.elementBy(opts)
     return api
       .forField(field)
-      .change(opts.value, {
+      .changeValue(opts.value, {
         name: opts.id || opts.name
       })
   }

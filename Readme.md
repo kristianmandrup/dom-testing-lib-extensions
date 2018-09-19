@@ -2,6 +2,8 @@
 
 Useful extensions to react-testing-library for easier testing. Includes specific API methods for form/field input testing
 
+## Philosophy and design considerations
+
 A core philosophy of this extension library is to better allow accessing elements by `id` or `name` as they are way less volatile reference markers.
 
 Personally I like to use generators to generate most of my application artifacts from various schemas. Hence I don't know or care what labels will go in. This means that the core philosophy of "testing by usage" doesn't really suit my application development style, as I don't care about what the user sees at the end... until the end!
@@ -10,11 +12,30 @@ I tend to focus first on infrastructure and leave the UI concerns including labe
 
 I like to inject texts, labels, UI framework, theming etc. much later in the dev process and maintain flexibility with regards to _i18n_ etc.
 
+## Dependencies
+
+This library has no dependencies.
+
+## Usage
+
+```js
+import { apiFor, eventsApi } from "react-testing-lib-extensions";
+```
+
 ## API
 
 ```js
-const api = apiFor(container);
+import { fireEvent } from "react-testing-library";
 ```
+
+use `eventsApi` to generate generic wrappers for `fireEvent` and other library specific methods
+
+```js
+const config = eventsApi({ fireEvent });
+const api = apiFor(container, config);
+```
+
+The `api` returned exposes the following methods:
 
 ```js
 // return a DOM element by selector
@@ -53,6 +74,32 @@ submit(opts)  // same options as elementBy
 // convenience methods to set or change multiple field inputs by iterating a map
 setValues(obj)
 changeValues(obj
+```
+
+## elementsFor
+
+Example:
+
+```js
+const elementsMap = {
+  name: {
+    // firstName field element selector
+    name: "firstName",
+    type: "text",
+    value: "no name"
+  },
+  age: {
+    // age field element selector
+    testId: "age",
+    value: 32
+  }
+};
+
+// return map of references to each DOM element of elementsMap
+const elementRefs = api.elementsFor(elementsMap);
+
+// set value of each
+api.elementsFor(elementsMap, (api, opts) => api.setValue(opts));
 ```
 
 ## Example Scenario
