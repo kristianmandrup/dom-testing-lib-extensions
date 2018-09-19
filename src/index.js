@@ -1,0 +1,106 @@
+export const change = (field, {name, value}) => {
+  fireEvent.change(field, {
+    target: {
+      name,
+      value
+    }
+  })
+}
+
+export const apiFor = (container) => {
+  const elementBy = ({
+    parent,
+    tag,
+    id,
+    testId,
+    name,
+    type
+  }) => {
+    const sel = (name, value) => {
+      return value && `[${name}="${value}"]`
+    }
+
+    let elem = sel('id', id) || sel('name', name) || sel('data-testid', testId)
+    const typeSel = type
+      ? `type=${type}`
+      : undefined
+    let attrSel = `[${elem}]`;
+    attrSel = typeSel
+      ? `${attrSel}[${typeSel}]`
+      : attrSel
+    const selector = tag
+      ? `${tag}${attrSel}`
+      : attrSel;
+    const fullSelector = parent
+      ? `${parent} ${selector}`
+      : selector;
+    return container.querySelector(fullSelector)
+  }
+
+  const api = {
+    elementBy
+  }
+
+  api.elementsFor = (obj, effect) => {
+    return Object
+      .keys(obj)
+      .reduce((acc, key) => {
+        const opts = obj[key]
+        const element = api.elementBy(opts)
+        effect && effect(api, opts)
+        acc[key] = element
+        return acc
+      }, {})
+  }
+
+  api.forField = (field) => ({
+    setValue: (value) => {
+      field.value = value
+      return field
+    },
+    changeValue: (value, opts) => {
+      const name = opts.name || opts.id
+      !name && warn(`missing name to change for`)
+      change(element, {
+        name: name,
+        value
+      })
+    }
+  })
+
+  api.setValue = (opts) => {
+    const field = api.elementBy(opts)
+    return api
+      .forField(field)
+      .setValue(opts.value)
+  }
+
+  api.setValues = (obj) => {
+    return api.elementsFor(obj, (api, opts) => api.setValue(opts))
+  }
+
+  api.changeValues = (obj) => {
+    return api.elementsFor(obj, (api, opts) => api.changeValue(opts))
+  }
+
+  api.submit = ({parent, id, name, testId}) => {
+    const submitButton = api.elementBy({
+      parent,
+      id,
+      name,
+      testId,
+      tag: 'button',
+      type: 'submit'
+    })
+    fireEvent.click(submitButton)
+  }
+  api.changeValue = (opts) => {
+    const field = api.elementBy(opts)
+    return api
+      .forField(field)
+      .change(opts.value, {
+        name: opts.id || opts.name
+      })
+  }
+  return api
+}

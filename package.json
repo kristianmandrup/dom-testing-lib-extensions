@@ -1,0 +1,19 @@
+{
+  "name": "react-testing-lib-extensions",
+  "version": "0.1.0",
+  "description": "Extensions for react-testing-library",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "react",
+    "react-testing-library",
+    "testing",
+    "form",
+    "fields",
+    "DOM"
+  ],
+  "author": "Kristian Mandrup <kmandrup@gmail.com>",
+  "license": "MIT"
+}
