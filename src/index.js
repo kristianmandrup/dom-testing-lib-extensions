@@ -83,12 +83,9 @@ export const apiFor = (container) => {
     return api.elementsFor(obj, (api, opts) => api.changeValue(opts))
   }
 
-  api.submit = ({parent, id, name, testId}) => {
+  api.submit = (opts) => {
     const submitButton = api.elementBy({
-      parent,
-      id,
-      name,
-      testId,
+      ...opts,
       tag: 'button',
       type: 'submit'
     })
