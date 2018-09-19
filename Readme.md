@@ -16,6 +16,16 @@ Methods such as `getByText` and `getByLabel` are thus pretty useless to me, exce
 
 I much prefer to inject texts, labels, UI framework, theming etc. much later in the dev process. The key os to maintain flexibility with regards to _i18n_ and other such cross cutting concerns.
 
+## Status
+
+WIP: Under development. Has yet to be "battle tested" and is thus not published on npm just yet.
+
+Currently using this library in [react-app-builder](https://github.com/kristianmandrup/react-app-builder)
+
+## Quick start: react-testing-library
+
+See [learning-material](https://www.npmjs.com/package/react-testing-library#learning-material)
+
 ## Dependencies
 
 This library has no dependencies. It can be used directly with DOM elements, such as for _js-dom_.
