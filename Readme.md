@@ -1,20 +1,26 @@
 # Extensions for react-testing-library
 
-Useful extensions to react-testing-library for easier testing. Includes specific API methods for form/field input testing
+Useful extensions to [react-testing-library](https://github.com/kentcdodds/react-testing-library) and [](https://github.com/kentcdodds/dom-testing-library) for easier testing.
+
+Includes specific API methods for form and field testing, including changing and submitting field values.
 
 ## Philosophy and design considerations
 
 A core philosophy of this extension library is to better allow accessing elements by `id` or `name` as they are way less volatile reference markers.
 
-Personally I like to use generators to generate most of my application artifacts from various schemas. Hence I don't know or care what labels will go in. This means that the core philosophy of "testing by usage" doesn't really suit my application development style, as I don't care about what the user sees at the end... until the end!
+Personally I like to use generators to generate most of my application artifacts from various schemas. Hence I don't know or care what labels will go in. This means that the core philosophy of "testing by end user usage" doesn't really suit my application development style, as I don't care about what the user sees at the end... until the end!
 
-I tend to focus first on infrastructure and leave the UI concerns including labels/text to the final stage of development (ie. "skinning"). Hence methods such as `getByText` or `getByLabel` are pretty useless to me, except perhaps for E2E testing at the end. Sure, you could somehow reference the same labels being injected, but only if the injection mechanism is "fixed" and not subject to much change either.
+I personally tend to focus first on infrastructure and leave the UI/UX concerns including labels/text to the final stages of development (ie. "skinning").
 
-I like to inject texts, labels, UI framework, theming etc. much later in the dev process and maintain flexibility with regards to _i18n_ etc.
+Methods such as `getByText` and `getByLabel` are thus pretty useless to me, except perhaps for E2E testing at the end. Sure, you could somehow reference the same labels being injected, but why depend on that? And only works if the injection mechanism is "fixed" and not subject to change later, unless you then abstract away the mechanism with yet another wrapper :P
+
+I much prefer to inject texts, labels, UI framework, theming etc. much later in the dev process. The key os to maintain flexibility with regards to _i18n_ and other such cross cutting concerns.
 
 ## Dependencies
 
-This library has no dependencies.
+This library has no dependencies. It can be used directly with DOM elements, such as for _js-dom_.
+
+PS: Might rename it later to not have the `react` name as it is really not React specific.
 
 ## Usage
 
@@ -37,6 +43,8 @@ const api = apiFor(container, config);
 
 The `api` returned exposes the following methods:
 
+### elementBy
+
 ```js
 // return a DOM element by selector
 elementBy({
@@ -47,36 +55,14 @@ elementBy({
   name,
   type
 });
-
-// retrieve a map of elements. Optionally execute an effect on each element
-elementsFor(obj, effect)
-
-// retrieve a dedicated form field value change API
-forField(field)
-// {
-//   changeValue(value, opts)
-//   setValue()
-// }
-
-// set field value for element matching elementBy selector
-// pass value option
-setValue(opts)  // same options as elementBy
-
-// set field value for element matching elementBy selector
-// pass value option
-changeValue(opts)  // same options as elementBy
-
-// find element matching elementBy selector
-// by default using: type: 'submit' and element: 'button'
-// if button found, clicks it
-submit(opts)  // same options as elementBy
-
-// convenience methods to set or change multiple field inputs by iterating a map
-setValues(obj)
-changeValues(obj
 ```
 
-## elementsFor
+### elementsFor
+
+```js
+// retrieve a map of elements. Optionally execute an effect on each element
+elementsFor(obj, effect);
+```
 
 Example:
 
@@ -95,11 +81,101 @@ const elementsMap = {
   }
 };
 
-// return map of references to each DOM element of elementsMap
-const elementRefs = api.elementsFor(elementsMap);
-
 // set value of each
 api.elementsFor(elementsMap, (api, opts) => api.setValue(opts));
+```
+
+### forField
+
+retrieve a dedicated form field value change API
+
+```js
+forField(field);
+// => { changeValue(value, opts), setValue(value) }
+```
+
+### setValue
+
+Set field value for element matching `elementBy` selector.
+Pass `value` option
+
+```js
+setValue({ name: "age", value: 32 });
+```
+
+### changeValue
+
+Set field value for element matching `elementBy` selector
+Pass `value` option
+
+```js
+changeValue({ name: "role", value: "admin" });
+```
+
+Find element matching `elementBy` selector by default using: `type: 'submit'` and `element: 'button'`. If button found, clicks it, triggering form submit.
+
+### submit
+
+```js
+submit();
+```
+
+```js
+submit({ parent: "#payment-options" });
+```
+
+### setValues
+
+Convenience methods to set or change multiple field inputs by iterating a map
+
+```js
+setValues(obj);
+```
+
+Example:
+
+```js
+const elementsMap = {
+  name: {
+    // firstName field element selector
+    name: "firstName",
+    type: "text",
+    value: "no name"
+  },
+  age: {
+    // age field element selector
+    testId: "age",
+    value: 32
+  }
+};
+
+// set value of each
+api.setValues(elementsMap);
+```
+
+### changeValues
+
+```js
+changeValues(obj
+```
+
+```js
+const elementsMap = {
+  name: {
+    // firstName field element selector
+    name: "firstName",
+    type: "text",
+    value: "no name"
+  },
+  age: {
+    // age field element selector
+    testId: "age",
+    value: 32
+  }
+};
+
+// set value of each
+api.changeValues(elementsMap);
 ```
 
 ## Example Scenario
