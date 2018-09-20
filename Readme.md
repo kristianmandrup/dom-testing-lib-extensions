@@ -245,6 +245,22 @@ const elementsMap = {
 api.changeValues(elementsMap);
 ```
 
+### changeSelected
+
+Call `onChange` DOM event with the list of `selectedOptions` as the target. An `option` in `selectedOptions` is set to state `selected` if it matches any value in the list passed in the `selected` option, such as `java` or `c#` in this example.
+
+```js
+api.changeSelected({ name: "languages", selected: ["java", "c#"] });
+```
+
+### setSelected
+
+Similar to `setSelected` but simply sets state of options. Doesn't specifically call `onChange` DOM event. Set `option` elements of a multi `select` to be in state `selected` for each matching values in the list passed via `selected` option, such as `java` or `c#` in this example.
+
+```js
+api.setSelected({ name: "languages", selected: ["java", "c#"] });
+```
+
 ## Example Scenario
 
 Imagine we have a person form with fields to update
@@ -385,6 +401,63 @@ testInputs({ inputs, form, type: "set" });
 ```
 
 Please note that we could optimize this testing further using the `setValues` and `changeValues` methods, but this scenario walk-through was meant to illustrate most of the core methods exposed. You can always add extra higher level methods as needed.
+
+## select element
+
+See [react-select](https://jedwatson.github.io/react-select/) examples and [repo](https://github.com/JedWatson/react-select)
+
+### Multi select
+
+Could be done something like this:
+
+```js
+  handleChange({target}) {
+    this.setState({
+      selected: [...target.selectedOptions].map({value} => value)});
+    }
+  }
+
+  render() {
+    const { selected } = this.state
+    return (
+      <select multiple value={this.props.multiValue} onChange={this.handleChange}>
+        {options.map(option => {
+          <option value={option.value} selected={selected[option.value]}>{option.value}</option>
+        })}
+      </select>
+    );
+  }
+```
+
+#### Pre-fabricated select components
+
+[react-select-multiple](https://www.npmjs.com/package/react-select-multiple) to display as list of checkboxes that syncs with a multi select.
+
+See [react-select v2 demo with fixed options](https://react-select.com/home#fixed-options)
+
+```js
+export default class FixedOptions extends Component<*, State> {
+  onChange(value, { action, removedValue }) {
+    this.setState({ value: value });
+  }
+
+  render() {
+    return (
+      <Select
+        value={this.state.value}
+        isMulti
+        styles={styles}
+        isClearable={this.state.value.some(v => !v.isFixed)}
+        name="colors"
+        className="basic-multi-select"
+        classNamePrefix="select"
+        onChange={this.onChange}
+        options={colourOptions}
+      />
+    );
+  }
+}
+```
 
 ## Development
 

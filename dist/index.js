@@ -12,10 +12,15 @@ const eventsApi = exports.eventsApi = ({
   };
 };
 
+const count = (...vals) => vals.reduce((acc, val) => acc += Boolean(val) ? 1 : 0, 0);
+
 const createEventOpts = (event, opts) => {
   const api = {
     setFor(name) {
-      if (opts[key]) event[key] = opts[key];
+      if (opts[key]) {
+        event[key] = opts[key];
+      }
+
       return api;
     },
 
@@ -94,36 +99,58 @@ const apiFor = exports.apiFor = (container, config) => {
       },
       setChecked: checked => {
         if (checked === undefined) {
-          throw new Error(`setChecked. checked option must be set to something that is truthy or falsy, not undefined`);
+          throw new Error(`setChecked: checked option must be set to something that is truthy or falsy, not undefined`);
         }
 
         field.checked = Boolean(checked);
         return field;
       },
-      // handles both checked and value
-      change: opts => {
-        const event = createEventOpts({}, opts).setAll('name', 'value', 'checked');
-
-        if (!(event.value || event.checked)) {
-          throw new Error(`Invalid change event. Must have either checked or value option`);
+      setSelected: selected => {
+        if (!Array.isArray(selected)) {
+          throw new Error(`setSelected: must take an array of option values to be selected`);
         }
 
-        if (event.value && event.checked) {
-          throw new Error(`Invalid change event. Must have either checked or value option but not both`);
+        const {
+          selectedOptions
+        } = field;
+        selectedOptions.map(option => {
+          if (selectedOptions.includes(option.value)) {
+            option.selected = true;
+          }
+        });
+        return field;
+      },
+      // handles both checked and value
+      change: opts => {
+        const event = createEventOpts({}, opts).setAll('name', 'value', 'checked', 'selectedOptions');
+
+        if (!(event.value || event.checked || event.selectedOptions)) {
+          throw new Error(`Invalid change event. Must have 'checked', 'value' or 'selectedOptions' option`);
+        }
+
+        if (count(event.value, event.checked, event.selectedOptions) > 1) {
+          throw new Error(`Invalid change event. Must have 'checked', 'value' or 'selectedOptions' option but not multiple`);
         }
 
         return change(element, event);
       }
     };
 
+    api.changeSelected = opts => {
+      delete opts.checked;
+      delete opts.value;
+      api.change(opts);
+    };
+
     api.changeValue = opts => {
       delete opts.checked;
+      delete opts.selected;
       api.change(opts);
-    }; // alias
-
+    };
 
     api.changeChecked = opts => {
       delete opts.value;
+      delete opts.selected;
       api.change(opts);
     };
 
@@ -139,6 +166,11 @@ const apiFor = exports.apiFor = (container, config) => {
   api.setChecked = opts => {
     const field = api.elementBy(opts);
     return api.forField(field).setChecked(opts.checked);
+  };
+
+  api.setSelected = opts => {
+    const field = api.elementBy(opts);
+    return api.forField(field).setSelected(opts.selected);
   };
 
   api.check = opts => {

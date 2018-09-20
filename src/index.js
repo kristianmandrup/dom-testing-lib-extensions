@@ -4,11 +4,16 @@ export const eventsApi = ({fireEvent}) => {
   }
 }
 
+const count = (...vals) => vals.reduce((acc, val) => acc += Boolean(val)
+  ? 1
+  : 0, 0)
+
 const createEventOpts = (event, opts) => {
   const api = {
     setFor(name) {
-      if (opts[key]) 
+      if (opts[key]) {
         event[key] = opts[key]
+      }
       return api
     },
     get event() {
@@ -89,33 +94,53 @@ export const apiFor = (container, config) => {
       },
       setChecked: (checked) => {
         if (checked === undefined) {
-          throw new Error(`setChecked. checked option must be set to something that is truthy or falsy, not undefined`)
+          throw new Error(`setChecked: checked option must be set to something that is truthy or falsy, not undefined`)
         }
         field.checked = Boolean(checked)
         return field
       },
+      setSelected: (selected) => {
+        if (!Array.isArray(selected)) {
+          throw new Error(`setSelected: must take an array of option values to be selected`)
+        }
+        const {selectedOptions} = field
+        selectedOptions.map(option => {
+          if (selectedOptions.includes(option.value)) {
+            option.selected = true
+          }
+        })
+        return field
+      },
+
       // handles both checked and value
       change: (opts) => {
-        const event = createEventOpts({}, opts).setAll('name', 'value', 'checked')
+        const event = createEventOpts({}, opts).setAll('name', 'value', 'checked', 'selectedOptions')
 
-        if (!(event.value || event.checked)) {
-          throw new Error(`Invalid change event. Must have either checked or value option`)
+        if (!(event.value || event.checked || event.selectedOptions)) {
+          throw new Error(`Invalid change event. Must have 'checked', 'value' or 'selectedOptions' option`)
         }
-        if (event.value && event.checked) {
-          throw new Error(`Invalid change event. Must have either checked or value option but not both`)
+        if (count(event.value, event.checked, event.selectedOptions) > 1) {
+          throw new Error(`Invalid change event. Must have 'checked', 'value' or 'selectedOptions' option but not multiple`)
         }
         return change(element, event)
       }
     }
 
-    api.changeValue = (opts) => {
+    api.changeSelected = (opts) => {
       delete opts.checked
+      delete opts.value
       api.change(opts)
     }
 
-    // alias
+    api.changeValue = (opts) => {
+      delete opts.checked
+      delete opts.selected
+      api.change(opts)
+    }
+
     api.changeChecked = (opts) => {
       delete opts.value
+      delete opts.selected
       api.change(opts)
     }
     return api
@@ -134,6 +159,13 @@ export const apiFor = (container, config) => {
     return api
       .forField(field)
       .setChecked(opts.checked)
+  }
+
+  api.setSelected = (opts) => {
+    const field = api.elementBy(opts)
+    return api
+      .forField(field)
+      .setSelected(opts.selected)
   }
 
   api.check = (opts) => {
