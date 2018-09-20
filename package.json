@@ -1,19 +1,29 @@
 {
-  "name": "react-testing-lib-extensions",
+  "name": "dom-testing-lib-extensions",
   "version": "0.1.0",
-  "description": "Extensions for react-testing-library",
+  "description": "API extensions for dom-testing-library",
   "main": "src/index.js",
   "scripts": {
     "test": "jest"
   },
   "keywords": [
+    "dom-testing-library",
+    "testing",
+    "DOM",
+    "TDD",
     "react",
     "react-testing-library",
-    "testing",
     "form",
-    "fields",
-    "DOM"
+    "fields"
   ],
   "author": "Kristian Mandrup <kmandrup@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kristianmandrup/dom-testing-lib-extensions.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kristianmandrup/dom-testing-lib-extensions/issues"
+  },
+  "homepage": "https://github.com/kristianmandrup/dom-testing-lib-extensions#readme"
 }

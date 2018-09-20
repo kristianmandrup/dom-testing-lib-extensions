@@ -1,7 +1,26 @@
-export const eventsApi = ({fireEvent}) {
-  fireEvent: (name, ...args) => {
+export const eventsApi = ({fireEvent}) => {
+  fireEvent : (name, ...args) => {
     fireEvent[name](...args)
   }
+}
+
+const createEventOpts = (event, opts) => {
+  const api = {
+    setFor(name) {
+      if (opts[key]) 
+        event[key] = opts[key]
+      return api
+    },
+    get event() {
+      return event
+    }
+  }
+
+  api.setAll = (...names) => {
+    names.map(api.setFor)
+    return event
+  }
+  return api
 }
 
 export const apiFor = (container, config) => {
@@ -14,6 +33,7 @@ export const apiFor = (container, config) => {
         value
       }
     })
+    return field
   }
 
   const elementBy = ({
@@ -61,26 +81,73 @@ export const apiFor = (container, config) => {
       }, {})
   }
 
-  api.forField = (field) => ({
-    setValue: (value) => {
-      field.value = value
-      return field
-    },
-    changeValue: (value, opts) => {
-      const name = opts.name || opts.id
-      !name && warn(`missing name to change for`)
-      change(element, {
-        name: name,
-        value
-      })
+  api.forField = (field) => {
+    const api = {
+      setValue: (value) => {
+        field.value = value
+        return field
+      },
+      setChecked: (checked) => {
+        if (checked === undefined) {
+          throw new Error(`setChecked. checked option must be set to something that is truthy or falsy, not undefined`)
+        }
+        field.checked = Boolean(checked)
+        return field
+      },
+      // handles both checked and value
+      change: (opts) => {
+        const event = createEventOpts({}, opts).setAll('name', 'value', 'checked')
+
+        if (!(event.value || event.checked)) {
+          throw new Error(`Invalid change event. Must have either checked or value option`)
+        }
+        if (event.value && event.checked) {
+          throw new Error(`Invalid change event. Must have either checked or value option but not both`)
+        }
+        return change(element, event)
+      }
     }
-  })
+
+    api.changeValue = (opts) => {
+      delete opts.checked
+      api.change(opts)
+    }
+
+    // alias
+    api.changeChecked = (opts) => {
+      delete opts.value
+      api.change(opts)
+    }
+    return api
+  }
 
   api.setValue = (opts) => {
     const field = api.elementBy(opts)
+    const fieldApi = api.forField(field)
+    return opts.value
+      ? fieldApi.setValue(opts.value)
+      : fieldApi.setChecked(opts.checked)
+  }
+
+  api.setChecked = (opts) => {
+    const field = api.elementBy(opts)
     return api
       .forField(field)
-      .setValue(opts.value)
+      .setChecked(opts.checked)
+  }
+
+  api.check = (opts) => {
+    return api.setChecked({
+      ...opts,
+      checked: true
+    })
+  }
+
+  api.uncheck = (opts) => {
+    return api.setChecked({
+      ...opts,
+      checked: false
+    })
   }
 
   api.setValues = (obj) => {
@@ -88,7 +155,7 @@ export const apiFor = (container, config) => {
   }
 
   api.changeValues = (obj) => {
-    return api.elementsFor(obj, (api, opts) => api.changeValue(opts))
+    return api.elementsFor(obj, (api, opts) => api.change(opts))
   }
 
   api.submit = (opts) => {
@@ -98,14 +165,27 @@ export const apiFor = (container, config) => {
       type: 'submit'
     })
     fireEvent('click', submitButton)
+    return submitButton
   }
-  api.changeValue = (opts) => {
+
+  api.change = (opts) => {
     const field = api.elementBy(opts)
+    const name = opts.id || opts.name
+    let changeEventOpts = createEventOpts({name}).setAll('checked', 'value')
     return api
       .forField(field)
-      .changeValue(opts.value, {
-        name: opts.id || opts.name
-      })
+      .changeValue(changeEventOpts)
+  }
+
+  api.changeValue = (opts) => {
+    delete opts.checked
+    return api.change(opts)
+  }
+
+  api.changeChecked = (opts) => {
+    delete opts.value
+    return api.change(opts)
+
   }
   return api
 }

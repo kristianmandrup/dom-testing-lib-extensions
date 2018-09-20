@@ -1,8 +1,11 @@
-# Extensions for react-testing-library
+# Extensions for dom-testing-library
 
-Useful extensions to [react-testing-library](https://github.com/kentcdodds/react-testing-library) and [](https://github.com/kentcdodds/dom-testing-library) for easier testing.
+API extensions to [dom-testing-library](https://github.com/kentcdodds/dom-testing-library) for easier DOM testing.
 
-Includes specific API methods for form and field testing, including changing and submitting field values.
+Designed specifically to facilitae form and field testing, including changing and submitting field values.
+
+Can be used with [react-testing-library](https://github.com/kentcdodds/react-testing-library).
+See React with Jest example below.
 
 ## Philosophy and design considerations
 
@@ -35,7 +38,7 @@ PS: Might rename it later to not have the `react` name as it is really not React
 ## Usage
 
 ```js
-import { apiFor, eventsApi } from "react-testing-lib-extensions";
+import { apiFor, eventsApi } from "dom-testing-lib-extensions";
 ```
 
 ## API
@@ -106,17 +109,27 @@ forField(field);
 
 ### setValue
 
-Set field value for element matching `elementBy` selector.
+Set field `value` attribute for element matching `elementBy` selector.
 Pass `value` option
 
 ```js
 setValue({ name: "age", value: 32 });
 ```
 
+Note: Can also handle `checked` option, passing it to `setChecked`
+
+### setChecked
+
+Set field `checked` attribute for element matching `elementBy` selector.
+Pass `checked` option (`true` for checked, `false` unchecked)
+
+```js
+setChecked({ name: "married", checked: true });
+```
+
 ### changeValue
 
-Set field value for element matching `elementBy` selector
-Pass `value` option
+Notify DOM that `value` attribute for element matching `elementBy` selector has been changed to a given value. Pass value as `value` option
 
 ```js
 changeValue({ name: "role", value: "admin" });
@@ -124,11 +137,46 @@ changeValue({ name: "role", value: "admin" });
 
 Find element matching `elementBy` selector by default using: `type: 'submit'` and `element: 'button'`. If button found, clicks it, triggering form submit.
 
+### changeChecked
+
+Notify DOM that `checked` attribute for element matching `elementBy` selector has been changed to a given status (checked or unchecked). Pass checked status as `checked` option
+
+```js
+changeValue({ name: "married", checked: "true" });
+```
+
+### change
+
+Generic `change` method that can be used with either `checked` or `value` option
+
+```js
+change({ name: "role", value: "admin" });
+change({ name: "married", checked: "true" });
+```
+
+### check
+
+Convenience method for `setChecked` with `checked: true`
+
+```js
+check({ name: "married" });
+```
+
+### uncheck
+
+Convenience method for `setChecked` with `checked: false`
+
+```js
+uncheck({ name: "married" });
+```
+
 ### submit
 
 ```js
 submit();
 ```
+
+Submit using first submit `button` element (with `type="submit"`) that has a parent element with `id="payment-options"`
 
 ```js
 submit({ parent: "#payment-options" });
@@ -136,7 +184,7 @@ submit({ parent: "#payment-options" });
 
 ### setValues
 
-Convenience methods to set or change multiple field inputs by iterating a map
+Convenience methods to set or change multiple field inputs by iterating a map of property set configurations.
 
 ```js
 setValues(obj);
@@ -150,12 +198,17 @@ const elementsMap = {
     // firstName field element selector
     name: "firstName",
     type: "text",
-    value: "no name"
+    value: "no name" // use setValue
   },
   age: {
     // age field element selector
     testId: "age",
-    value: 32
+    value: 32 // use setValue
+  },
+  married: {
+    // age field element selector
+    testId: "age",
+    checked: true // use setChecked
   }
 };
 
@@ -181,6 +234,10 @@ const elementsMap = {
     // age field element selector
     testId: "age",
     value: 32
+  },
+  married: {
+    name: "married",
+    checked: true // will fall back to use changeChecked instead
   }
 };
 
