@@ -170,18 +170,6 @@ Convenience method for `setChecked` with `checked: false`
 uncheck({ name: "married" });
 ```
 
-### submit
-
-```js
-submit();
-```
-
-Submit using first submit `button` element (with `type="submit"`) that has a parent element with `id="payment-options"`
-
-```js
-submit({ parent: "#payment-options" });
-```
-
 ### setValues
 
 Convenience methods to set or change multiple field inputs by iterating a map of property set configurations.
@@ -259,6 +247,42 @@ Similar to `setSelected` but simply sets state of options. Doesn't specifically 
 
 ```js
 api.setSelected({ name: "languages", selected: ["java", "c#"] });
+```
+
+### setUnselected
+
+```js
+api.setUnselected({ name: "languages", unselected: ["java", "c#"] });
+```
+
+### clearSelected
+
+```js
+api.clearSelected({ name: "languages" });
+```
+
+### clearValue
+
+```js
+api.clearValue({ name: "firstName" });
+```
+
+### withField
+
+```js
+api.withField({ name: "firstName" }, field => (field.style = "color: red"));
+```
+
+### submit
+
+```js
+submit();
+```
+
+Submit using first submit `button` element (with `type="submit"`) that has a parent element with `id="payment-options"`
+
+```js
+submit({ parent: "#payment-options" });
 ```
 
 ## Example Scenario

@@ -93,6 +93,10 @@ const apiFor = exports.apiFor = (container, config) => {
 
   api.forField = field => {
     const api = {
+      clearValue: value => {
+        field.value = '';
+        return field;
+      },
       setValue: value => {
         field.value = value;
         return field;
@@ -111,11 +115,35 @@ const apiFor = exports.apiFor = (container, config) => {
         }
 
         const {
-          selectedOptions
+          options
         } = field;
-        selectedOptions.map(option => {
-          if (selectedOptions.includes(option.value)) {
+        options.map(option => {
+          if (options.includes(option.value)) {
             option.selected = true;
+          }
+        });
+        return field;
+      },
+      clearSelected: () => {
+        const {
+          options
+        } = field;
+        options.map(option => {
+          option.selected = false;
+        });
+        return field;
+      },
+      setUnselected: unselected => {
+        if (!Array.isArray(unselected)) {
+          throw new Error(`setUnselected: must take an array of option values to be unselected`);
+        }
+
+        const {
+          options
+        } = field;
+        options.map(option => {
+          if (options.includes(option.value)) {
+            option.selected = false;
           }
         });
         return field;
@@ -134,6 +162,30 @@ const apiFor = exports.apiFor = (container, config) => {
 
         return change(element, event);
       }
+    };
+
+    api.withField = (opts, fn) => {
+      const field = api.elementBy(opts);
+      fn(field);
+    };
+
+    api.clearSelected = opts => {
+      const field = api.elementBy(opts);
+      return api.forField(field).clearSelected();
+    };
+
+    api.clearValue = opts => {
+      const field = api.elementBy(opts);
+      return api.forField(field).clearValue();
+    }; // TODO: make sure that field supports whatever attribute we are clearing
+
+
+    api.clear = opts => {
+      const field = api.elementBy(opts);
+      field.clearValue();
+      field.clearSelected();
+      field.uncheck();
+      return field;
     };
 
     api.changeSelected = opts => {
