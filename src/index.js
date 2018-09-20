@@ -43,12 +43,19 @@ export const apiFor = (container, config) => {
 
   const elementBy = ({
     parent,
+    field,
+    element,
     tag,
     id,
     testId,
     name,
     type
   }) => {
+    const elem = element || field
+    if (elem) {
+      return elem
+    }
+
     const sel = (name, value) => {
       return value && `[${name}="${value}"]`
     }

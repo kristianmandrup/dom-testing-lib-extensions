@@ -61,12 +61,14 @@ The `api` returned exposes the following methods:
 ```js
 // return a DOM element by selector
 elementBy({
-  parent,
-  tag,
-  id,
-  testId,
-  name,
-  type
+  parent, // parent selector
+  element, // DOM element
+  field, // DOM element
+  tag, // tag name, such as: select
+  id, // id of element
+  testId, // data-testid value
+  name, // name of element
+  type // type of field, such as password or text
 });
 ```
 
