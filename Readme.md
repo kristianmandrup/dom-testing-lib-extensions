@@ -386,6 +386,12 @@ testInputs({ inputs, form, type: "set" });
 
 Please note that we could optimize this testing further using the `setValues` and `changeValues` methods, but this scenario walk-through was meant to illustrate most of the core methods exposed. You can always add extra higher level methods as needed.
 
+## Development
+
+### Create distribution
+
+`npx babel src --out-dir dist`
+
 ## License
 
 MIT

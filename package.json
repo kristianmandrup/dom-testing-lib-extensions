@@ -2,7 +2,7 @@
   "name": "dom-testing-lib-extensions",
   "version": "0.1.0",
   "description": "API extensions for dom-testing-library",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest"
   },
@@ -25,5 +25,11 @@
   "bugs": {
     "url": "https://github.com/kristianmandrup/dom-testing-lib-extensions/issues"
   },
-  "homepage": "https://github.com/kristianmandrup/dom-testing-lib-extensions#readme"
+  "homepage": "https://github.com/kristianmandrup/dom-testing-lib-extensions#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.1.0",
+    "@babel/core": "^7.1.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "babel-plugin-transform-es2015-modules-simple-commonjs": "^0.3.0"
+  }
 }
