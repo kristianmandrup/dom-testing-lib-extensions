@@ -269,20 +269,32 @@ api.clearValue({ name: "firstName" });
 
 ### withField
 
+Execute function on matching field
+
 ```js
 api.withField({ name: "firstName" }, field => (field.style = "color: red"));
 ```
 
 ### submit
 
+Submit using first submit `button` element (with `type="submit"`)
+
 ```js
-submit();
+api.submit();
 ```
 
 Submit using first submit `button` element (with `type="submit"`) that has a parent element with `id="payment-options"`
 
 ```js
-submit({ parent: "#payment-options" });
+api.submit({ parent: "#payment-options" });
+```
+
+### reset
+
+Reset the values of all elements in the form
+
+```js
+api.reset({ name: "loginForm" });
 ```
 
 ## Example Scenario

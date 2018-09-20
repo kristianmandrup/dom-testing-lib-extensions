@@ -254,6 +254,13 @@ const apiFor = exports.apiFor = (container, config) => {
     return submitButton;
   };
 
+  api.reset = opts => {
+    const field = api.elementBy(_objectSpread({}, opts, {
+      tag: 'form'
+    }));
+    field && field.reset();
+  };
+
   api.change = opts => {
     const field = api.elementBy(opts);
     const name = opts.id || opts.name;
